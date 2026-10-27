@@ -1,1 +1,6 @@
 # stock-price-predictor-
+Our stock price predictor turns complex market data into clear, actionable forecasts. Search any ticker and instantly see projected price movements, trend analysis, and key technical indicators, all in one easy-to-read dashboard.
+Built on historical price data, market trends, and machine learning models, our tool helps you spot patterns you might otherwise miss. Compare multiple stocks side by side, track your watchlist, and explore short-term and long-term outlooks with interactive charts.
+Whether you're a beginner learning how markets move or an experienced trader refining your strategy, our platform gives you the insights you need to make more informed decisions. No clutter, no jargon, just straightforward predictions you can understand and act on.
+Start exploring today and see where your favorite stocks could be headed next.
+Predictions are estimates for informational purposes only and are not financial advice. Past performance does not guarantee future results.
