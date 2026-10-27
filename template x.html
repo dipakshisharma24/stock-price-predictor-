@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Market Analysis | Advanced Search & Sector Insights</title>
+<meta name="description" content="Explore real-time data for over 1000+ Indian & US stocks. Analyze top companies like Reliance, TCS, Apple, and Microsoft with our advanced stock screening platform.">
+<link rel="canonical" href="https://yourdomain.com">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-canvas: #f8fafc;       
+  --bg-surface: #ffffff;      
+  --text-main: #0f172a;       
+  --text-muted: #64748b;      
+  --primary-brand: #1e3a8a;  
+  --primary-light: #eff6ff;
+  
+  /* Market Psychology Colors */
+  --bullish-green: ;  
+  --bullish-ligh:;  
+  --bearish-red: ;    
+  --bearish-light:;  
+  
+  --border: #e2e8f0;          
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body { 
+  font-family: 'Inter', sans-serif; 
+  background-color: var(--bg-canvas); 
+  color: var(--text-main); 
+  margin: 0; 
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 📈 AUTOMATIC SLOW LIVE MARKET TICKER */
+.market-ticker-container {
+  background: var(--bg-surface);
+  border-bottom: 5px solid var(--border);
+  overflow: hidden; 
+  position: relative;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.market-ticker-bar {
+  display: flex;
+  gap: 40px;
+  width: max-content;
+  white-space: nowrap;
+  animation: ticker-move 30s linear infinite; /* 30s keeps it perfectly smooth and slow */
+}
+
+/* Hover over items to pause the animation (Great UX) */
+.market-ticker-container:hover .market-ticker-bar {
+  animation-play-state: paused;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 900;
+}
+.ticker-name { color: var(--text-muted); }
+.ticker-val { color: var(--text-main); }
+
+@keyframes ticker-move {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); } /* Loop break pattern for duplicate sets */
+}
+
+.container {
+  max-width: 1100px; 
+  margin: 40px auto;
+  padding: 0 24px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.03em;
+  margin: 0 0 8px 0;
+}
+header p {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* BREADCRUMB */
+.breadcrumb-nav {
+  margin-bottom: 24px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.breadcrumb-nav a {
+  color: var(--primary-brand);
+  text-decoration: none;
+}
+
+/* PREMIUM SEARCH BAR */
+.search-wrapper {
+  position: relative;
+  max-width: 650px;
+  margin: 0 auto 48px auto;
+}
+.search-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-icon {
+  position: absolute;
+  left: 18px;
+  color: var(--text-muted);
+  width: 22px;
+  height: 22px;
+}
+.search-input-group input { 
+  width: 100%; 
+  padding: 18px 18px 18px 54px; 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-lg); 
+  font-size: 15px; 
+  font-weight: 500;
+  background: var(--bg-surface);
+  outline: none; 
+  box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.04);
+  transition: var(--transition);
+  box-sizing: border-box;
+}
+.search-input-group input:focus { 
+  border-color: var(--primary-brand); 
+  box-shadow: 0 20px 25px -5px rgba(30, 58, 138, 0.1); 
+}
+
+/* DROPDOWN RESULTS */
+.dropdown-results { 
+  background: var(--bg-surface); 
+  border: 2px solid var(--border); 
+  border-radius: var(--radius-md); 
+  margin-top: 8px; 
+  max-height: 320px; 
+  overflow-y: auto; 
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15); 
+  position: absolute;
+  width: 100%;
+  z-index: 100;
+  display: none;
+}
+.result-row { 
+  padding: 14px 20px; 
+  border-bottom: 1px solid var(--border); 
+  cursor: pointer; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition);
+}
+.result-row:hover { background: var(--bg-canvas); }
+.highlight { background: #fef08a; padding: 0 2px; border-radius: 4px; }
+
+/* MARKET TABS ARCHITECTURE */
+.tabs-container {
+  display: flex;
+  gap: 12px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 32px;
+}
+.tab-btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding-bottom: 14px;
+  margin-bottom: -2px;
+  transition: var(--transition);
+}
+.tab-btn.active {
+  color: var(--primary-brand);
+  border-bottom: 2px solid var(--primary-brand);
+}
+
+.market-panel {
+  display: none;
+}
+.market-panel.active {
+  display: block;
+}
+
+/* DASHBOARD GRID & RICH CARDS */
+.sector-section {
+  margin-bottom: 32px;
+}
+.sector-heading {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+.stock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+  gap: 16px;
+}
+.stock-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-decoration: none;
+  color: var(--text-main);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.stock-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-brand);
+  box-shadow: 0 12px 20px -5px rgba(15, 23, 42, 0.08);
+}
+.card-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stock-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.ticker-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  background: var(--bg-canvas);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.mcap-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.card-right {
+  text-align: right;
+}
+.stock-price {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+.trend-indicator {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+.trend-up { color: var(--bullish-green); background: var(--bullish-light); }
+.trend-down { color: var(--bearish-red); background: var(--bearish-light); }
+
+.badge-market {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+.badge-market.us { background: #f1f5f9; color: var(--text-main); }
+.badge-market.in { background: #e0f2fe; color: #0369a1; }
+
+@media (max-width: 768px) {
+  .stock-grid { grid-template-columns: 1fr; }
+  header h1 { font-size: 2rem; }
+}
+</style>
+
+</head>
+<body>
+
+<div class="market-ticker-container"><B>
+  <div class="market-ticker-bar">
+    <div class="ticker-item"><span class="ticker-name">NIFTY 50</span><span class="ticker-val">23,520.40</span><span class="trend-indicator trend-up">+1.15%</span>|</div>
+    <div class="ticker-item"><span class="ticker-name">SENSEX</span><span class="ticker-val">77,310.20</span><span class="trend-indicator trend-up">+0.98%</span>|</div>
+    <div class="ticker-item"><span class="ticker-name">S&P 500</span><span class="ticker-val">5,432.10</span><span class="trend-indicator trend-down">-0.32%</span>|</div>
+    <div class="ticker-item"><span class="ticker-name">NASDAQ</span><span class="ticker-val">17,700.50</span><span class="trend-indicator trend-down">-0.45%</span>|</div>
+    
+    <div class="ticker-item"><span class="ticker-name">NIFTY 50</span><span class="ticker-val">23,520.40</span><span class="trend-indicator trend-up">+1.15%</span>|</div>
+    <div class="ticker-item"><span class="ticker-name">SENSEX</span><span class="ticker-val">77,310.20</span><span class="trend-indicator trend-up">+0.98%</span>|</div>
+    <div class="ticker-item"><span class="ticker-name">S&P 500</span><span class="ticker-val">5,432.10</span><span class="trend-indicator trend-down">-0.32%</span>|</div>
+    <div class="ticker-item"><span class="ticker-name">NASDAQ</span><span class="ticker-val">17,700.50</span><span class="trend-indicator trend-down">-0.45%</span>|</div>
+  </div></B>
+</div>
+
+<div class="container">
+  
+  <header>
+    <h1>Stock Search & Analytics</h1>
+    <p>Premium fundamental analysis dashboard with sector tracking</p>
+  </header>
+
+  <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+    <a href="/">Home</a> &gt; <span id="dynamic-path">Dashboard</span>
+  </nav>
+
+  <div class="search-wrapper">
+    <div class="search-input-group">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input type="text" id="main-search" placeholder="Search 1,000+ US & Indian stocks (e.g. Apple, TCS)..." autocomplete="off">
+    </div>
+    <div class="dropdown-results" id="search-dropdown"></div>
+  </div>
+
+  <main>
+    <div class="tabs-container">
+      <button class="tab-btn active" onclick="switchMarket('indian-market', this)">Indian Stock Markets</button>
+      <button class="tab-btn" onclick="switchMarket('us-market', this)">Wall Street Equities</button>
+    </div>
+
+    <div id="indian-market" class="market-panel active">
+      <div class="sector-section">
+        <div class="sector-heading">IT Services</div>
+        <div class="stock-grid">
+          <a href="TCS.html" class="stock-card" onclick="setMetaPath('Indian Markets', 'IT', 'TCS')">
+            <div class="card-left">
+              <div><span class="stock-name">TCS</span> <span class="ticker-label">TCS</span></div>
+              <span class="mcap-label">McCap: ₹14.2T</span>
+            </div>
+            <div class="card-right">
+              <div class="stock-price">₹3,850.20</div>
+              <span class="trend-indicator trend-up">+0.85%</span>
+            </div>
+          </a>
+          <a href="infosys.html" class="stock-card" onclick="setMetaPath('Indian Markets', 'IT', 'Infosys')">
+            <div class="card-left">
+              <div><span class="stock-name">Infosys</span> <span class="ticker-label">INFY</span></div>
+              <span class="mcap-label">McCap: ₹6.1T</span>
+            </div>
+            <div class="card-right">
+              <div class="stock-price">₹1,480.00</div>
+              <span class="trend-indicator trend-down">-1.20%</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="sector-section">
+        <div class="sector-heading">Banking Sector</div>
+        <div class="stock-grid">
+          <a href="hdfcbank.html" class="stock-card" onclick="setMetaPath('Indian Markets', 'Banking', 'HDFC Bank')">
+            <div class="card-left">
+              <div><span class="stock-name">HDFC Bank</span> <span class="ticker-label">HDFCBANK</span></div>
+              <span class="mcap-label">McCap: ₹12.4T</span>
+            </div>
+            <div class="card-right">
+              <div class="stock-price">₹1,620.40</div>
+              <span class="trend-indicator trend-up">+3.40%</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div id="us-market" class="market-panel">
+      <div class="sector-section">
+        <div class="sector-heading">Tech Giants</div>
+        <div class="stock-grid">
+          <a href="applstock.html" class="stock-card" onclick="setMetaPath('Wall Street', 'Tech', 'Apple')">
+            <div class="card-left">
+              <div><span class="stock-name">Apple Inc.</span> <span class="ticker-label">AAPL</span></div>
+              <span class="mcap-label">McCap: $3.2T</span>
+            </div>
+            <div class="card-right">
+              <div class="stock-price">$214.30</div>
+              <span class="trend-indicator trend-up">+1.42%</span>
+            </div>
+          </a>
+          <a href="Microsoft.html" class="stock-card" onclick="setMetaPath('Wall Street', 'Tech', 'Microsoft')">
+            <div class="card-left">
+              <div><span class="stock-name">Microsoft Corp.</span> <span class="ticker-label">MSFT</span></div>
+              <span class="mcap-label">McCap: $3.1T</span>
+            </div>
+            <div class="card-right">
+              <div class="stock-price">$420.55</div>
+              <span class="trend-indicator trend-down">-0.65%</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// Mock Dataset for Search
+const stockDataset = [
+  { name:"Apple", ticker:"AAPL", zone:"Wall Street", sector:"Tech Giants", badge:"US Equity", styleClass:"us", trend:"+1.42%", price:"$214.30", url:"applstock.html", up: true },
+  { name:"Microsoft", ticker:"MSFT", zone:"Wall Street", sector:"Tech Giants", badge:"US Equity", styleClass:"us", trend:"-0.65%", price:"$420.55", url:"Microsoft.html", up: false },
+  { name:"TCS", ticker:"TCS", zone:"Indian Markets", sector:"IT Services", badge:"NSE / BSE", styleClass:"in", trend:"+0.85%", price:"₹3,850.20", url:"TCS.html", up: true },
+  { name:"Infosys", ticker:"INFY", zone:"Indian Markets", sector:"IT Services", badge:"NSE / BSE", styleClass:"in", trend:"-1.20%", price:"₹1,480.00", url:"infosys.html", up: false },
+  { name:"HDFC Bank", ticker:"HDFCBANK", zone:"Indian Markets", sector:"Banking Indexes", badge:"NSE / BSE", styleClass:"in", trend:"+3.40%", price:"₹1,620.40", url:"hdfcbank.html", up: true }
+];
+
+const searchField = document.getElementById("main-search");
+const dropdownMenu = document.getElementById("search-dropdown");
+const pathDisplay = document.getElementById("dynamic-path");
+
+function switchMarket(marketId, button) {
+  document.querySelectorAll('.market-panel').forEach(panel => panel.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  
+  document.getElementById(marketId).classList.add('active');
+  button.classList.add('active');
+}
+
+function searchDebounce(fn, timeoutDuration) {
+  let timerId;
+  return function (...executionArgs) {
+    clearTimeout(timerId);
+    timerId = setTimeout(() => fn.apply(this, executionArgs), timeoutDuration);
+  };
+}
+
+function generateHighlight(originalString, targetedQuery) {
+  const matchRegex = new RegExp(`(${targetedQuery})`, "gi");
+  return originalString.replace(matchRegex, '<span class="highlight">$1</span>');
+}
+
+function setMetaPath(zoneGroup, businessSector, equityName) {
+  pathDisplay.innerHTML = `<a href="#">${zoneGroup}</a> &gt; <a href="#">${businessSector}</a> &gt; <span style="color:var(--text-main); font-weight:600;">${equityName}</span>`;
+}
+
+function processLiveSearch() {
+  const searchStringValue = searchField.value.trim().toLowerCase();
+  dropdownMenu.innerHTML = "";
+  
+  if(!searchStringValue) {
+    dropdownMenu.style.display = "none";
+    return;
+  }
+  
+  const verifiedMatches = stockDataset.filter(item => 
+    item.name.toLowerCase().includes(searchStringValue) || 
+    item.ticker.toLowerCase().includes(searchStringValue)
+  );
+  
+  dropdownMenu.style.display = "block";
+  
+  if(verifiedMatches.length === 0) {
+    dropdownMenu.innerHTML = `<div class="result-row" style="color:var(--text-muted); font-size:0.95rem;">No assets match your query.</div>`;
+    return;
+  }
+  
+  verifiedMatches.slice(0, 8).forEach(matchedStock => {
+    const listRowItem = document.createElement('div');
+    listRowItem.className = 'result-row';
+    const trendClass = matchedStock.up ? 'trend-up' : 'trend-down';
+    
+    listRowItem.innerHTML = `
+      <div>
+        <strong style="font-weight: 600;">${generateHighlight(matchedStock.name, searchStringValue)}</strong> 
+        <span class="ticker-label">${generateHighlight(matchedStock.ticker, searchStringValue)}</span>
+        <span class="trend-indicator ${trendClass}" style="margin-left: 8px; font-size: 0.75rem;">${matchedStock.trend}</span>
+      </div>
+      <span class="badge-market ${matchedStock.styleClass}">${matchedStock.badge}</span>
+    `;
+    
+    listRowItem.onclick = () => {
+      window.location.href = matchedStock.url; 
+    };
+    
+    dropdownMenu.appendChild(listRowItem);
+  });
+}
+
+searchField.addEventListener('input', searchDebounce(processLiveSearch, 150));
+
+document.addEventListener('click', (eventObject) => {
+  if(!eventObject.target.closest('.search-wrapper')) {
+    dropdownMenu.style.display = "none";
+  }
+});
+</script>
+
+</body>
+</html>
